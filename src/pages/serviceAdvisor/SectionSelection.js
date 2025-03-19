@@ -13,6 +13,7 @@ import axios from 'axios'
 import { getCookie } from '../../jsfunctions/cookies'
 import { useLocation, useHistory } from 'react-router-dom/cjs/react-router-dom.min'
 import { toast } from 'react-toastify'
+import { Modal } from '@material-ui/core'
 
 
 export default function SectionSelection() {
@@ -22,11 +23,13 @@ export default function SectionSelection() {
     const [totalTime, settotalTime] = useState(0);
     const [estimatedPrice, setestimatedPrice] = useState(0);
     const [estimatedTime, setestimatedTime] = useState(0);
+    const [rate, setrate] = useState(0);
     
     // const repairId=0;
     const history = useHistory();
 
     const location = useLocation();
+    console.log("location.state");
     console.log(location.state);
 
     var config = {
@@ -131,7 +134,9 @@ export default function SectionSelection() {
     
         const requestBody = {
             order: 20, // Adjust order value dynamically if needed
-            serviceEntries: repairList.map(repair => repair.itemName)
+            serviceEntries: repairList.map(repair => repair.itemName),
+            make:location.state.make,
+            model:location.state.model
         };
     
         axios.post(`http://127.0.0.1:5000/app/`, requestBody, {
@@ -144,14 +149,16 @@ export default function SectionSelection() {
     
             // Check if the response has the expected structure
             if (response.data) {
-                setestimatedTime(response.data); // Directly update with the estimated time
+                setestimatedTime(response.data.time_estimated); // Directly update with the estimated time
+                setrate(response.data.rate);
                 if(response.data.time_estimated != 0) {
                     toast.success('✔ Time Estimation Set');
                 }
             } else if (Array.isArray(response.data)) {
                 // Handle cases where the response is an array for single service entries
                 if (response.data[0] && response.data[0].time_estimated) {
-                    setestimatedTime(response.data[0]);
+                    setestimatedTime(response.data[0].time_estimated);
+                    setrate(response.data[0].rate);
                     toast.success('✔ Time Estimation Set');
                 } else {
                     throw new Error('Invalid response structure');
@@ -225,12 +232,12 @@ export default function SectionSelection() {
                                 <div className="border-b-2 mt-4"></div>
                             </div>
                             <div className="mt-6 ml-12 mr-12 xl:ml-1 xl:mr-1">
-                                <TimeEstimationSVAD time={(parseFloat(estimatedTime.time_estimated)).toFixed(2)} />
+                                <TimeEstimationSVAD time={(parseFloat(estimatedTime)).toFixed(2)} />
                             </div>
                             <div className="mt-6 ml-12 mr-12 xl:ml-1 xl:mr-1">
                                 {/* current cost rate - per min = 5500/60 */}
                                 {/* current cost rate - per hour = 3500*/}
-                                <CostEstimation cost={((parseFloat(estimatedTime.time_estimated))/60*3500).toFixed(2)} />
+                                <CostEstimation cost={((parseFloat(estimatedTime))/60*(rate*10)).toFixed(2)} />
                                 {/* Need to add styles */}
                                 <div className="flex flex-col justify-center items-center">
                                     <button onClick={checkTime} className=" w-64 xl:w-56 bg-green-800 text-white rounded-lg p-4 mt-4 mb-6">Check Time/Cost</button>

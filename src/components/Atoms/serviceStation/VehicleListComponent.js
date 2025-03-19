@@ -15,7 +15,9 @@ export default function VehicleListComponent(props) {
                             state:{
                                 vehicleNo:props.vehicle.vehicleNumber,
                                 vin:props.vehicle.vin,
-                                userId:props.userId
+                                userId:props.userId,
+                                make:props.vehicle.make,
+                                model:props.vehicle.model
                                 }
                             }} />
 
