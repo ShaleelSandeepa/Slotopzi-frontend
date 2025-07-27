@@ -6,6 +6,7 @@ import SummaryRightContainer from '../../components/Organs/technician/SummaryRig
 import { useLocation } from 'react-router-dom/cjs/react-router-dom.min'
 import axios from 'axios'
 import { getCookie } from '../../jsfunctions/cookies'
+import { toast } from 'react-toastify'
 
 export default function ServiceSummary() {
     const [repair, setrepair] = useState('');
@@ -29,6 +30,7 @@ export default function ServiceSummary() {
         }, config)
             .then(function (response) {
                 console.log(response.data);
+                toast.success('✔ Repair Started');
             })
     }
 

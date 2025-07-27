@@ -24,6 +24,7 @@ export default function SectionSelection() {
     const [estimatedPrice, setestimatedPrice] = useState(0);
     const [estimatedTime, setestimatedTime] = useState(0);
     const [rate, setrate] = useState(0);
+    const [repairId, setrepairId] = useState(0);
     
     // const repairId=0;
     const history = useHistory();
@@ -47,6 +48,8 @@ export default function SectionSelection() {
             .then(function (response) {
                 console.log(response.data);
                 toast.success('✔ Repair Added Successfully');
+                setrepairId(response.data);
+                // console.log(repairId);
                 // Then add service entries
                 axios.post(`${process.env.REACT_APP_API_BASE_URL}/advisor/add service entries`, {
                     "userId": location.state.userId,
@@ -59,7 +62,18 @@ export default function SectionSelection() {
                         axios.get(`${process.env.REACT_APP_API_BASE_URL}/advisor/nextslot/${response.data}`, config)
                             .then(function (nextSlotResponse) {
                                 console.log(nextSlotResponse.data);
-                                toast.success('✔ Next Slot is ' + nextSlotResponse.data.slotName,{ onClose: () => history.push('/serviceadvisor') });
+                                toast.success('✔ Assigned Slot is ' + nextSlotResponse.data.slotName,{ onClose: () => history.push('/serviceadvisor') });
+
+                                // axios.post(`${process.env.REACT_APP_API_BASE_URL}/technician/repair/acceptance`, {
+                                //     "repairId": location.state.repair,
+                                //     "sectionName": location.state.section
+                                // }, config)
+                                //     .then(function (acceptanceResponse) {
+                                //         console.log(acceptanceResponse.data);
+                                //     })
+                                //     .catch(function (error) {
+                                //         console.error("Error in repair acceptance:", error);
+                                //     });
                             })
                             .catch(function (error) {
                                 // console.log(error.nextSlotResponse.data);
